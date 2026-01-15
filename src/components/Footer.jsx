@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Footer() {
     return (
         <footer className="bg-dark text-white py-4 mt-5">
@@ -12,15 +14,15 @@ export default function Footer() {
                     <div className="col-md-3 mb-3">
                         <h5>Liens rapides</h5>
                         <ul className="list-unstyled">
-                            <li><a href="#" className="text-white-50 text-decoration-none">Accueil</a></li>
-                            <li><a href="#" className="text-white-50 text-decoration-none">Services</a></li>
-                            <li><a href="#" className="text-white-50 text-decoration-none">Contact</a></li>
+                            <li><Link to={'/'} className="text-white-50 text-decoration-none">Accueil</Link></li>
+                            <li><Link to={'/panier'} className="text-white-50 text-decoration-none">Panier</Link></li>
+                            <li><Link to={'/contact'} className="text-white-50 text-decoration-none">Contact</Link></li>
                         </ul>
                     </div>
 
                     <div className="col-md-3 mb-3">
                         <h5>Contact</h5>
-                        <p className="text-white-50 mb-1">Email : contact@example.com</p>
+                        <p className="text-white-50 mb-1">Email : contact@gmail.com</p>
                         <p className="text-white-50 mb-1">Téléphone : +212 6 00 00 00 00</p>
                     </div>
 

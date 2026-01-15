@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Header() {
     return (
         <>
@@ -19,20 +21,22 @@ export default function Header() {
                     <div className="collapse navbar-collapse justify-content-between" id="navbarNav">
                         <ul className="navbar-nav">
                             <li className="nav-item">
-                                <a className="nav-link active" href="#">Accueil</a>
+                                <Link className="nav-link " to={'/'}>Accueil</Link>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" href="#">Produits</a>
+                                <Link className="nav-link" to={'/products'}>Produits</Link>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" href="#">Panier</a>
+                                <Link className="nav-link" to={'/panier'}>Panier</Link>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" href="#">Contact</a>
+                                <Link className="nav-link" to={'/contact'}>Contact</Link>
                             </li>
                         </ul>
 
                         <div>
+                            <button className="btn btn-primary mx-2"><i class="bi bi-cart">🛒</i> 0</button>
+                            
                             <button className="btn btn-primary">Se connecter</button>
                         </div>
                     </div>

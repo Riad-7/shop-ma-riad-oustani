@@ -6,29 +6,31 @@ import Header from './components/Header'
 import ProductCard from './components/ProductCard'
 import Footer from './components/Footer'
 import products from './data/Products'
+import { Routes, Route } from 'react-router-dom'
+import Accueil from './components/Accueil'
+import ProductList from './data/ProductList'
+import Panier from './components/Panier'
+import Contact from './components/Contact'
 
 function App() {
 
   return (
     <>
-      <Header />
-      <div className="container my-5">
-        <h2 className="mb-4">Nos Produits</h2>
 
-        <div className="row g-4">
-          {products.map((product) => (
-            <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={product.id}>
-              <ProductCard
-                name={product.name}
-                price={product.price}
-                image={product.image}
-                inStock={product.inStock}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      <Header />
+      <Routes>
+        <Route path='/' element={<Accueil />} />
+        <Route path='/products' element={<ProductList />} />
+        <Route path='/panier' element={<Panier />} />
+        <Route path='/contact' element={<Contact />} />
+        {/* <Route path="/ products /: id" element={<ProductDetail />} /> */}
+
+
+
+      </Routes>
+      
       <Footer />
+
     </>
   )
 }
