@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import products from './Products'
-import ProductCard from '../components/ProductCard'
+import ProductCard from './ProductCard'
 
 function ProductList() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [inputV, setInputV] = useState('');
 
     useEffect(() => {
         fetch('https://fakestoreapi.com/products')
@@ -17,19 +17,21 @@ function ProductList() {
     if (loading) return <p>Chargement...</p>;
     if (error) return <p style={{ color: 'red' }}>Erreur: {error}</p>;
 
+
     return (
         <>
             <div className="container my-5">
-                <h2 className="mb-4">Nos Produits</h2>
-
+                <div className="d-flex justify-content-between mb-4">
+                    <h2 className="mb-4">Nos Produits</h2>
+                    <input type="text" className="form-control-lg mb-4" placeholder="Rechercher un produit..." onChange={(e) => {setInputV(e.target.value)}}/>               
+                </div>
                 <div className="row g-4">
-                    {products.map((product) => (
+                    {products.filter((product) => {
+                        return inputV.toLowerCase() === '' ? product : product.title.toLowerCase().includes(inputV.toLowerCase())
+                    }).map((product) => (
                         <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={product.id}>
                             <ProductCard
-                                title={product.title}
-                                price={product.price}
-                                image={product.image}
-                                category={product.category}
+                                product={product}
                             />
                         </div>
                     ))}

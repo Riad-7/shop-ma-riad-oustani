@@ -5,10 +5,7 @@ export default function Header() {
         <>
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
                 <div className="container">
-                    <a className="navbar-brand" href="#">
-                        <img src="src\assets\ana22.jpg" alt="" width="30" height="25" />
-                    </a>
-
+                    <Link to={'/'} className="navbar-brand"><img src="src\assets\ana22.jpg" alt="" width="30" height="25" /></Link>
                     <button
                         className="navbar-toggler"
                         type="button"
@@ -35,8 +32,8 @@ export default function Header() {
                         </ul>
 
                         <div>
-                            <button className="btn btn-primary mx-2"><i class="bi bi-cart">🛒</i> 0</button>
-                            
+                            <button className="btn btn-primary mx-2"><i className="bi bi-cart">🛒</i> 0</button>
+
                             <button className="btn btn-primary">Se connecter</button>
                         </div>
                     </div>
