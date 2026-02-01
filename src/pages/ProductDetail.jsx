@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { addToCart } from '../features/cart/cartSlice';
+import { useDispatch } from 'react-redux';
 
 function ProductDetail() {
+    const dispatch = useDispatch()
     const { id } = useParams();
     const navigate = useNavigate()
     const [products, setProducts] = useState({});
@@ -72,7 +75,7 @@ function ProductDetail() {
                                         ← Retour
                                     </button>
 
-                                    <button className="btn btn-warning px-4 fw-semibold">
+                                    <button className="btn btn-warning px-4 fw-semibold" onClick={() => dispatch(addToCart(products))}>
                                         🛒 Ajouter au panier
                                     </button>
                                 </div>

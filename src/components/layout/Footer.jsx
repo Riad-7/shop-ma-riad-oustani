@@ -7,8 +7,8 @@ export default function Footer() {
                 <div className="row justify-content-between">
 
                     <div className="col-md-4 mb-3">
-                        <h5>Mon Site</h5>
-                        <p>Une petite description du site ou de l'entreprise.</p>
+                        <h5>Riad Shop</h5>
+                        <p>description</p>
                     </div>
 
                     <div className="col-md-3 mb-3">

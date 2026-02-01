@@ -1,8 +1,11 @@
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
+import { addToCart } from "../../features/cart/cartSlice";
 
 export default function ProductCard({ product }) {
     const shortTitle = product.title.slice(0, 30) + " ...";
     const {id} = useParams()
+    const dispatch = useDispatch()
     return (
         <>
             <div
@@ -26,15 +29,14 @@ export default function ProductCard({ product }) {
                     <p className="fw-bold mb-2 text-success">${product.price}</p>
 
                     <span className="badge text-bg-primary mb-3">{product.category}</span>
-
-                    {/* Boutons */}
+                    
                     <div className="d-flex gap-2">
                         <Link to={`/products/${product.id}`} className="btn btn-outline-dark w-50">
                             Voir détails
                         </Link>
 
-                        <button className="btn btn-dark w-50">
-                            Ajouter
+                        <button className="btn btn-dark w-50" onClick={() => {dispatch(addToCart(product))}}>
+                            Ajouter 
                         </button>
                     </div>
                 </div>

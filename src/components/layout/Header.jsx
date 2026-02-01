@@ -24,15 +24,14 @@ export default function Header() {
                                 <Link className="nav-link" to={'/products'}>Produits</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to={'/panier'}>Panier</Link>
-                            </li>
-                            <li className="nav-item">
                                 <Link className="nav-link" to={'/contact'}>Contact</Link>
                             </li>
                         </ul>
 
                         <div>
-                            <button className="btn btn-primary mx-2"><i className="bi bi-cart">🛒</i> 0</button>
+                            <button className="btn btn-primary mx-2">
+                                <Link className="nav-link" to={'/panier'}>🛒</Link>
+                            </button>
 
                             <button className="btn btn-primary">Se connecter</button>
                         </div>

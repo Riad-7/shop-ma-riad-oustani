@@ -1,5 +1,5 @@
 import React from 'react'
-import './accueil.css'
+import '../components/accueil.css'
 import { Link } from 'react-router-dom'
 function Accueil() {
   return (
