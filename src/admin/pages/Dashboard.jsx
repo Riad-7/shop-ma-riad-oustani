@@ -6,8 +6,6 @@ const Dashboard = () => {
   const { products, getStats } = useShop();
   const stats = getStats();
   
-  // Les 5 derniers produits ajoutés (on suppose qu'ils sont en haut de la liste ou on slice)
-  // Note: Dans le context, addProduct utilise un spread [new, ...old], donc les derniers sont au début.
   const latestProducts = products.slice(0, 5);
 
   return (

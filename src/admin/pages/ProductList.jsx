@@ -6,10 +6,8 @@ import { useNavigate } from 'react-router-dom';
 const ProductList = () => {
   const { products, deleteProduct } = useShop();
   const navigate = useNavigate();
-  
-  // Filtres locaux
   const [filterCat, setFilterCat] = useState('all');
-  const [filterPrice, setFilterPrice] = useState('all'); // all, low, mid, high
+  const [filterPrice, setFilterPrice] = useState('all');
 
   const categories = ['all', ...new Set(products.map(p => p.category))];
 

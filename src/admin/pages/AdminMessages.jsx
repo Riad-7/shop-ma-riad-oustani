@@ -4,23 +4,19 @@ import { useShop } from '../../context/ShopContext';
 const AdminMessages = () => {
   const { messages, deleteMessage, markAsRead } = useShop();
   
-  // États pour les filtres
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'read', 'unread'
+  const [filterStatus, setFilterStatus] = useState('all');
 
-  // Logique de filtrage
   const filteredMessages = messages.filter(msg => {
-    // 1. Filtre par recherche texte (Nom, Email ou Sujet)
     const matchesSearch = 
       msg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       msg.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       msg.subject.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // 2. Filtre par statut (Lu / Non lu)
     const matchesStatus = 
       filterStatus === 'all' ? true :
       filterStatus === 'read' ? msg.isRead :
-      !msg.isRead; // unread
+      !msg.isRead; 
 
     return matchesSearch && matchesStatus;
   });

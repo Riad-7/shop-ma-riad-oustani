@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 const ProductForm = () => {
   const { addProduct, updateProduct, products } = useShop();
   const navigate = useNavigate();
-  const { id } = useParams(); // Si ID présent, c'est une modification
+  const { id } = useParams();
 
   const [formData, setFormData] = useState({
     title: '', price: '', description: '', category: '', image: ''
@@ -13,7 +13,7 @@ const ProductForm = () => {
 
   useEffect(() => {
     if (id) {
-      const productToEdit = products.find(p => p.id == id); // == car id url est string
+      const productToEdit = products.find(p => p.id == id);
       if (productToEdit) setFormData(productToEdit);
     }
   }, [id, products]);

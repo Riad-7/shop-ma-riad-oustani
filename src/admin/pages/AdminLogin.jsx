@@ -36,9 +36,7 @@ const AdminLogin = () => {
           <button type="submit" className="admin-btn-submit" style={{width: '100%'}}>Se connecter</button>
         </form>
         <button onClick={() => navigate('/')} className="admin-back-btn">← Retour au Shop</button>
-        <p>just pour la suivi 🤷‍♂️😂: </p>
         <p>email : admin@shop.ma</p>
-        <p>mot de passe : admin123</p>
       </div>
       
     </div>
