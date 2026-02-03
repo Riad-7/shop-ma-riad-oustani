@@ -1,44 +1,86 @@
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 export default function Header() {
+  
+    const panierCount = useSelector((state)=>{ return state.cart.items.length })
+
     return (
-        <>
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-                <div className="container">
-                    <Link to={'/'} className="navbar-brand"><img src="src\assets\ana22.jpg" alt="" width="30" height="25" /></Link>
-                    <button
-                        className="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#navbarNav"
-                    >
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
+    <>
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow py-3 sticky-top">
+        <div className="container">
+          {/* Logo avec Texte */}
+          <Link
+            to={"/"}
+            className="navbar-brand d-flex align-items-center fw-bold"
+          >
+            <img
+              src="src\assets\ana22.jpg"
+              alt="Logo"
+              width="40"
+              height="40"
+              className="rounded-circle me-2 border border-2 border-white"
+            />
+            <span>
+              RIAD<span className="text-warning">SHOP</span>
+            </span>
+          </Link>
 
-                    <div className="collapse navbar-collapse justify-content-between" id="navbarNav">
-                        <ul className="navbar-nav">
-                            <li className="nav-item">
-                                <Link className="nav-link " to={'/'}>Accueil</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link className="nav-link" to={'/products'}>Produits</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link className="nav-link" to={'/contact'}>Contact</Link>
-                            </li>
-                        </ul>
+          <button
+            className="navbar-toggler border-0"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
 
-                        <div>
-                            <button className="btn btn-primary mx-2">
-                                <Link className="nav-link" to={'/panier'}>🛒</Link>
-                            </button>
+          <div className="collapse navbar-collapse" id="navbarNav">
+            {/* Liens centrés avec mx-auto */}
+            <ul className="navbar-nav mx-auto mb-2 mb-lg-0 fw-semibold">
+              <li className="nav-item px-2">
+                <Link className="nav-link active" to={"/"}>
+                  Accueil
+                </Link>
+              </li>
+              <li className="nav-item px-2">
+                <Link className="nav-link" to={"/products"}>
+                  Produits
+                </Link>
+              </li>
+              <li className="nav-item px-2">
+                <Link className="nav-link" to={"/contact"}>
+                  Contact
+                </Link>
+              </li>
+            </ul>
 
-                            <button className="btn btn-primary">Se connecter</button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+            {/* Zone Actions */}
+            <div className="d-flex align-items-center gap-3">
+              {/* Panier avec Badge */}
+              <Link
+                to={"/panier"}
+                className="btn btn-outline-light position-relative border-0"
+              >
+                <span className="fs-5">🛒</span>
+                <span
+                  className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  style={{ fontSize: "0.6rem" }}
+                >
+                  {panierCount}
+                </span>
+              </Link>
 
-        </>
-    )
+              <Link
+                to={"/login"}
+                className="btn btn-warning text-dark fw-bold px-4 rounded-pill"
+              >
+                Connexion
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </>
+  );
 }

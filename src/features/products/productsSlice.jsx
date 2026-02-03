@@ -4,12 +4,11 @@ export const fetchProducts = createAsyncThunk(
   'products/fetchProducts',
   async () => {
     const res = await fetch("https://fakestoreapi.com/products")
-    const data = await res.json();
-    return data;
+    return await res.json();
   }
 );
 
-const productsSlice = createSlice({
+export const productsSlice = createSlice({
   name: "products",
   initialState: {
     items: [],

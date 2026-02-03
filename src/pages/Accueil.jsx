@@ -1,26 +1,37 @@
-import React from 'react'
-import '../components/accueil.css'
-import { Link } from 'react-router-dom'
+import React from "react";
+import "../components/accueil.css";
+import { Link } from "react-router-dom";
 function Accueil() {
   return (
     <>
-      <div className="container-fluid bg-ligth py-5 h-100 ">
-        <div className="row justify-content-center text-center hero">
-          <div className="col-md-8">
-            <h1 className="display-4 fw-bold">
+      <div className="container-fluid bg-light py-5 h-100 d-flex align-items-center justify-content-center">
+        <div
+          className="card shadow-lg border-0 p-5 rounded-3"
+          style={{ maxWidth: "800px" }}
+        >
+          <div className="card-body text-center">
+            <h1 className="display-5 fw-bold text-dark mb-3">
               Bienvenue sur Notre Boutique
             </h1>
-            <p className="lead text-muted">
-              Découvrez nos meilleurs produits aux meilleurs prix.
+            <div
+              className="mx-auto mb-4 bg-primary"
+              style={{ height: "4px", width: "60px" }}
+            ></div>
+            <p className="lead text-secondary mb-4">
+              Une sélection unique de produits de qualité à des prix
+              imbattables. Faites votre choix dès maintenant.
             </p>
-            <Link to={'/products'} className="btn btn-primary btn-lg mt-3 px-4">
-              Voir nos produits
+            <Link
+              to={"/products"}
+              className="btn btn-primary btn-lg px-5 rounded-1"
+            >
+              Explorer la boutique
             </Link>
           </div>
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default Accueil
+export default Accueil;
