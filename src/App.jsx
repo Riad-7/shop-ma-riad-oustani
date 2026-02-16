@@ -6,12 +6,13 @@ import Header from "./components/layout/Header";
 import ProductCard from "./components/products/ProductCard";
 import ProductDetail from "./pages/ProductDetail";
 import Footer from "./components/layout/Footer";
+import ChatWidget from "./components/ChatWidget";
 import { Routes, Route } from "react-router-dom";
 import Accueil from "./pages/Accueil";
 import ProductList from "./pages/ProductList";
 import Panier from "./pages/Panier";
 import Contact from "./pages/Contact";
-import NotFound from "./components/NotFound";
+import NotFound from './pages/NotFound'
 import { ShopProvider } from "./context/ShopContext";
 import AdminLogin from "./admin/pages/AdminLogin";
 import AdminLayout from "./admin/components/AdminLayout";
@@ -35,6 +36,7 @@ const ShopRoutes = () => {
       </Routes>
 
       <Footer />
+      <ChatWidget />
     
     </>
   )

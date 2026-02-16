@@ -6,6 +6,11 @@ export default function ProductCard({ product }) {
   const shortTitle = product.title.slice(0, 30) + " ...";
   const { id } = useParams();
   const dispatch = useDispatch();
+
+  const handelAdd = () => {
+    dispatch(addToCart(product))
+    alert(`${shortTitle} est bien ajouter au panier !`)
+  }
   return (
     <>
       <div
@@ -56,7 +61,7 @@ export default function ProductCard({ product }) {
           <div className="mt-auto d-grid gap-2">
             <button
               className="btn btn-dark rounded-pill py-2"
-              onClick={() => dispatch(addToCart(product))}
+              onClick={handelAdd}
             >
               Ajouter au panier
             </button>
