@@ -1,0 +1,88 @@
+services:
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    volumes:
+      - ./:/app
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:8080/api
+    depends_on:
+      - api-gateway
+
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  auth-service:
+    image: node:20-alpine
+    working_dir: /app/backend
+    command: sh -c "npm install && npm run dev:auth"
+    volumes:
+      - ./:/app
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongo
+      - rabbitmq
+    ports:
+      - "4001:4001"
+
+  catalog-service:
+    image: node:20-alpine
+    working_dir: /app/backend
+    command: sh -c "npm install && npm run dev:catalog"
+    volumes:
+      - ./:/app
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongo
+      - rabbitmq
+    ports:
+      - "4002:4002"
+
+  communication-service:
+    image: node:20-alpine
+    working_dir: /app/backend
+    command: sh -c "npm install && npm run dev:communication"
+    volumes:
+      - ./:/app
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongo
+      - rabbitmq
+    ports:
+      - "4003:4003"
+
+  api-gateway:
+    image: node:20-alpine
+    working_dir: /app/backend
+    command: sh -c "npm install && npm run dev:gateway"
+    volumes:
+      - ./:/app
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - auth-service
+      - catalog-service
+      - communication-service
+    ports:
+      - "8080:8080"
+
+volumes:
+  mongo_data:

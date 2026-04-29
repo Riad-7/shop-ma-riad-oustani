@@ -1,9 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
+import { useShop } from "../context/ShopContext";
 
 export default function Contact() {
-  const handleSubmit = (e) => {
+  const { sendMessage } = useShop();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [feedback, setFeedback] = useState("");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Message sent!");
+
+    try {
+      await sendMessage(formData);
+      setFeedback("Message envoye avec succes.");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      setFeedback(error.message || "Erreur lors de l envoi.");
+    }
   };
 
   return (
@@ -19,6 +36,8 @@ export default function Contact() {
                 type="text"
                 className="form-control"
                 placeholder="Your name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
               />
             </div>
@@ -29,6 +48,20 @@ export default function Contact() {
                 type="email"
                 className="form-control"
                 placeholder="you@example.com"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Subject</label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Your subject"
+                value={formData.subject}
+                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                 required
               />
             </div>
@@ -39,9 +72,13 @@ export default function Contact() {
                 className="form-control"
                 rows="5"
                 placeholder="Your message..."
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 required
               ></textarea>
             </div>
+
+            {feedback && <p className="text-center small mb-3">{feedback}</p>}
 
             <button type="submit" className="btn btn-primary w-100">
               Send Message
@@ -51,5 +88,4 @@ export default function Contact() {
       </div>
     </div>
   );
-};
-
+}

@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './ChatWidget.css';
+import { API_URL } from '../services/api';
 
 const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { id: 1, text: "Hello! How can I help you today?", role: 'bot' }
+    { id: 1, text: 'Hello! How can I help you today?', role: 'bot' }
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,12 +33,12 @@ const ChatWidget = () => {
       role: 'user'
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/chat', {
+      const response = await fetch(`${API_URL}/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,23 +51,23 @@ const ChatWidget = () => {
       }
 
       const data = await response.json();
-      
+
       const botMessage = {
         id: Date.now() + 1,
         text: data.reply,
         role: 'bot'
       };
 
-      setMessages(prev => [...prev, botMessage]);
+      setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
       const errorMessage = {
         id: Date.now() + 1,
         text: "Sorry, I'm having trouble connecting to the server. Please try again later.",
         role: 'bot',
-        isError: true // handle generic error styling if needed
+        isError: true
       };
-       setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +76,7 @@ const ChatWidget = () => {
   return (
     <>
       <button className="chat-widget-toggle" onClick={toggleChat}>
-        {isOpen ? '✕' : '💬'}
+        {isOpen ? '×' : '💬'}
       </button>
 
       {isOpen && (
@@ -84,11 +85,11 @@ const ChatWidget = () => {
             <span>Shop Assistant</span>
             <button className="close-btn" onClick={toggleChat}>−</button>
           </div>
-          
+
           <div className="chat-messages">
             {messages.map((msg) => (
-              <div 
-                key={msg.id} 
+              <div
+                key={msg.id}
                 className={`message ${msg.role} ${msg.isError ? 'error' : ''}`}
               >
                 {msg.text}

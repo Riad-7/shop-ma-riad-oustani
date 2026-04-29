@@ -7,17 +7,13 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "gateway:dev": "node backend/api-gateway/src/server.js",
+    "backend:install": "npm install --prefix backend"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
     "@reduxjs/toolkit": "^2.11.2",
     "bootstrap": "^5.3.8",
-    "cohere-ai": "^7.20.0",
-    "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1",
-    "json-server": "^1.0.0-beta.5",
     "react": "^19.2.3",
     "react-dom": "^19.2.0",
     "react-redux": "^9.2.0",

@@ -1,16 +1,77 @@
-# React + Vite
+# Shop Ma Riad
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Projet e-commerce front + backend microservices.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Frontend: React + Vite
+- API Gateway: Node.js + Express
+- Microservices:
+  - `auth-service`: authentification JWT + admin seed
+  - `catalog-service`: produits + commandes + statistiques
+  - `communication-service`: messages contact + chat + event log
+- Base de donnees: MongoDB
+- Messaging: RabbitMQ
+- Conteneurisation: Docker Compose
 
-## React Compiler
+## Architecture
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```text
+frontend -> api-gateway -> auth-service
+                        -> catalog-service
+                        -> communication-service
 
-## Expanding the ESLint configuration
+catalog/auth/services -> RabbitMQ exchange (shop.events) -> communication-service consumer
+services -> MongoDB
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Lancer avec Docker
+
+```bash
+docker compose up --build
+```
+
+Services exposes:
+
+- Frontend: `http://localhost:5173`
+- API Gateway: `http://localhost:8080`
+- Auth Service: `http://localhost:4001`
+- Catalog Service: `http://localhost:4002`
+- Communication Service: `http://localhost:4003`
+- MongoDB: `mongodb://localhost:27017`
+- RabbitMQ: `http://localhost:15672` (`guest` / `guest`)
+
+## Variables d'environnement
+
+Copier [backend/.env.example](/c:/Users/riado/OneDrive/Bureau/Front-End-Projects/shop-ma-riad-oustani/backend/.env.example) vers `backend/.env`.
+
+Admin par defaut:
+
+- Email: `admin@shop.ma`
+- Password: `123456`
+
+## Scripts utiles
+
+Depuis la racine:
+
+```bash
+npm run dev
+npm run backend:install
+npm run gateway:dev
+```
+
+Depuis `backend/`:
+
+```bash
+npm install
+npm run dev:gateway
+npm run dev:auth
+npm run dev:catalog
+npm run dev:communication
+```
+
+## Notes
+
+- Le frontend n'utilise plus `fakestoreapi` ni `localStorage` pour l'admin.
+- Le chat est gere par `communication-service` avec reponses intelligentes simples sans dependance externe.
+- Le `communication-service` consomme aussi les evenements RabbitMQ pour garder une trace de l'activite produits/commandes/auth.

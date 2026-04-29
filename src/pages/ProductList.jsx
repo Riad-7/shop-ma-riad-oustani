@@ -1,35 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ProductCard from "../components/products/ProductCard";
+import { useShop } from "../context/ShopContext";
 
 function ProductList() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { products, loading } = useShop();
   const [inputV, setInputV] = useState("");
 
-  useEffect(() => {
-    fetch("https://fakestoreapi.com/products")
-      .then((res) => {
-        if (!res.ok) throw new Error("Erreur");
-        return res.json();
-      })
-      .then((data) => {
-        setProducts(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
-
   if (loading) return <p>Chargement...</p>;
-  if (error) return <p style={{ color: "red" }}>Erreur: {error}</p>;
 
   return (
     <>
       <div className="container my-5">
-        {/* Header Section styled like a Toolbar */}
         <div className="bg-white p-4 rounded-3 shadow-sm mb-5 d-flex flex-column flex-md-row justify-content-between align-items-center">
           <h2 className="fw-bold text-primary m-0 mb-3 mb-md-0">
             <i className="bi bi-grid-fill me-2"></i>Nos Produits
@@ -47,7 +28,6 @@ function ProductList() {
           </div>
         </div>
 
-        {/* Grid Section */}
         <div className="row g-4">
           {products
             .filter((product) => {
@@ -58,7 +38,7 @@ function ProductList() {
             .map((product) => (
               <div
                 className="col-12 col-sm-6 col-md-4 col-lg-3"
-                key={product.id}
+                key={product._id}
               >
                 <ProductCard product={product} />
               </div>

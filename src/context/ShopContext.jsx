@@ -1,148 +1,234 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { apiRequest } from '../services/api';
 
 const ShopContext = createContext();
-
-
+const AUTH_STORAGE_KEY = 'shopAdminAuth';
 
 export const ShopProvider = ({ children }) => {
-
-    // --- 1. GESTION DES MESSAGES ---
-  const [messages, setMessages] = useState(() => {
-    const saved = localStorage.getItem('shopMessages');
-    return saved ? JSON.parse(saved) : [];
+  const [products, setProducts] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [dashboardStats, setDashboardStats] = useState({
+    totalProducts: 0,
+    totalOrders: 0,
+    totalRevenue: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [adminUser, setAdminUser] = useState(() => {
+    const saved = sessionStorage.getItem(AUTH_STORAGE_KEY);
+    return saved ? JSON.parse(saved).user : null;
+  });
+  const [token, setToken] = useState(() => {
+    const saved = sessionStorage.getItem(AUTH_STORAGE_KEY);
+    return saved ? JSON.parse(saved).token : null;
   });
 
-  useEffect(() => {
-    localStorage.setItem('shopMessages', JSON.stringify(messages));
-  }, [messages]);
-
-  // Fonction appelée par la page Contact
-  const sendMessage = (msgData) => {
-    const newMessage = {
-      id: Date.now(),
-      date: new Date().toISOString(),
-      isRead: false, // Pour savoir si l'admin l'a lu
-      ...msgData
-    };
-    setMessages([newMessage, ...messages]); // Le plus récent en premier
+  const saveAuth = (authPayload) => {
+    sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authPayload));
+    setAdminUser(authPayload.user);
+    setToken(authPayload.token);
   };
 
-  // Fonction pour l'Admin (Marquer comme lu / Supprimer)
-  const markAsRead = (id) => {
-    setMessages(messages.map(m => m.id === id ? { ...m, isRead: true } : m));
+  const clearAuth = () => {
+    sessionStorage.removeItem(AUTH_STORAGE_KEY);
+    setAdminUser(null);
+    setToken(null);
+    setMessages([]);
+    setOrders([]);
+    setDashboardStats({
+      totalProducts: 0,
+      totalOrders: 0,
+      totalRevenue: 0,
+    });
   };
 
-  const deleteMessage = (id) => {
-    setMessages(messages.filter(m => m.id !== id));
-  };
-
-
-  // --- Gestion des Produits ---
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // Charger les produits (API + LocalStorage pour les modifs)
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const localProducts = localStorage.getItem('shopProducts');
-      
-      if (localProducts) {
-        setProducts(JSON.parse(localProducts));
-        setLoading(false);
-      } else {
-        try {
-          const res = await fetch("https://fakestoreapi.com/products");
-          const data = await res.json();
-          setProducts(data);
-          localStorage.setItem('shopProducts', JSON.stringify(data));
-        } catch (error) {
-          console.error("Erreur fetch:", error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-    fetchProducts();
+  const loadProducts = useCallback(async () => {
+    const data = await apiRequest('/products');
+    setProducts(data.products);
+    return data.products;
   }, []);
 
-  // Sauvegarder dans LocalStorage à chaque modif
-  useEffect(() => {
-    if (products.length > 0) {
-      localStorage.setItem('shopProducts', JSON.stringify(products));
+  const loadOrders = useCallback(async (authToken = token) => {
+    if (!authToken) {
+      return [];
     }
-  }, [products]);
 
-  // --- Gestion des Commandes (Admin Stats) ---
-  const [orders, setOrders] = useState(() => {
-    return JSON.parse(localStorage.getItem('shopOrders')) || [];
-  });
+    const data = await apiRequest('/orders', { token: authToken });
+    setOrders(data.orders);
+    return data.orders;
+  }, [token]);
+
+  const loadMessages = useCallback(async (authToken = token) => {
+    if (!authToken) {
+      return [];
+    }
+
+    const data = await apiRequest('/messages', { token: authToken });
+    setMessages(data.messages);
+    return data.messages;
+  }, [token]);
+
+  const loadDashboard = useCallback(async (authToken = token) => {
+    if (!authToken) {
+      return null;
+    }
+
+    const data = await apiRequest('/dashboard/stats', { token: authToken });
+    setDashboardStats(data.stats);
+    return data;
+  }, [token]);
 
   useEffect(() => {
-    localStorage.setItem('shopOrders', JSON.stringify(orders));
-  }, [orders]);
+    const initialize = async () => {
+      try {
+        await loadProducts();
 
-  // --- Gestion de l'Authentification Admin ---
-  const [adminUser, setAdminUser] = useState(() => {
-    return sessionStorage.getItem('adminUser') ? JSON.parse(sessionStorage.getItem('adminUser')) : null;
-  });
+        if (token) {
+          await Promise.all([loadMessages(token), loadOrders(token), loadDashboard(token)]);
+        }
+      } catch (error) {
+        console.error('Initialization failed:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const loginAdmin = (email, password) => {
-    // Identifiants hardcodés pour la démo
-    if (email === "admin@shop.ma" && password === "123456") {
-      const user = { email, role: 'admin' };
-      setAdminUser(user);
-      sessionStorage.setItem('adminUser', JSON.stringify(user));
-      return true;
-    }
-    return false;
+    initialize();
+  }, [loadDashboard, loadMessages, loadOrders, loadProducts, token]);
+
+  const loginAdmin = async (email, password) => {
+    const data = await apiRequest('/auth/login', {
+      method: 'POST',
+      body: { email, password },
+    });
+
+    const authPayload = {
+      token: data.accessToken,
+      user: data.user,
+    };
+
+    saveAuth(authPayload);
+    await Promise.all([
+      loadMessages(authPayload.token),
+      loadOrders(authPayload.token),
+      loadDashboard(authPayload.token),
+    ]);
+
+    return data.user;
   };
 
   const logoutAdmin = () => {
-    setAdminUser(null);
-    sessionStorage.removeItem('adminUser');
+    clearAuth();
   };
 
-  // --- Actions Admin (CRUD & Orders) ---
-  const addProduct = (product) => {
-    const newProduct = { ...product, id: Date.now(), rating: { rate: 0, count: 0 } };
-    setProducts([newProduct, ...products]); // Ajout en haut de liste
+  const addProduct = async (product) => {
+    const data = await apiRequest('/products', {
+      method: 'POST',
+      token,
+      body: product,
+    });
+    setProducts((current) => [data.product, ...current]);
+    await loadDashboard(token);
+    return data.product;
   };
 
-  const updateProduct = (updatedProduct) => {
-    setProducts(products.map(p => p.id === updatedProduct.id ? updatedProduct : p));
+  const updateProduct = async (updatedProduct) => {
+    const data = await apiRequest(`/products/${updatedProduct._id}`, {
+      method: 'PUT',
+      token,
+      body: updatedProduct,
+    });
+    setProducts((current) =>
+      current.map((product) => (product._id === data.product._id ? data.product : product)),
+    );
+    await loadDashboard(token);
+    return data.product;
   };
 
-  const deleteProduct = (id) => {
-    setProducts(products.filter(p => p.id !== id));
+  const deleteProduct = async (id) => {
+    await apiRequest(`/products/${id}`, {
+      method: 'DELETE',
+      token,
+    });
+    setProducts((current) => current.filter((product) => product._id !== id));
+    await loadDashboard(token);
   };
 
-  const addOrder = (totalAmount) => {
-    const newOrder = {
-      id: Date.now(),
-      date: new Date().toISOString(),
-      total: totalAmount
-    };
-    setOrders([...orders, newOrder]);
+  const addOrder = async ({ customerName, customerEmail, items, total }) => {
+    const data = await apiRequest('/orders', {
+      method: 'POST',
+      body: {
+        customerName,
+        customerEmail,
+        items,
+        total,
+      },
+    });
+
+    if (token) {
+      await Promise.all([loadOrders(token), loadDashboard(token)]);
+    }
+
+    return data.order;
   };
 
-  // Stats pour le Dashboard
-  const getStats = () => {
-    const totalRevenue = orders.reduce((acc, order) => acc + order.total, 0);
-    return {
-      totalProducts: products.length,
-      totalOrders: orders.length,
-      totalRevenue
-    };
+  const sendMessage = async (msgData) => {
+    const data = await apiRequest('/messages', {
+      method: 'POST',
+      body: msgData,
+    });
+
+    if (token) {
+      await loadMessages(token);
+    }
+
+    return data.message;
   };
+
+  const markAsRead = async (id) => {
+    const data = await apiRequest(`/messages/${id}/read`, {
+      method: 'PATCH',
+      token,
+    });
+
+    setMessages((current) =>
+      current.map((message) => (message._id === id ? data.message : message)),
+    );
+  };
+
+  const deleteMessage = async (id) => {
+    await apiRequest(`/messages/${id}`, {
+      method: 'DELETE',
+      token,
+    });
+    setMessages((current) => current.filter((message) => message._id !== id));
+  };
+
+  const getStats = () => dashboardStats;
 
   return (
-    <ShopContext.Provider value={{
-      products, loading,
-      adminUser, loginAdmin, logoutAdmin,
-      addProduct, updateProduct, deleteProduct,
-      addOrder, getStats, orders,
-      messages, sendMessage, markAsRead, deleteMessage
-    }}>
+    <ShopContext.Provider
+      value={{
+        products,
+        messages,
+        orders,
+        loading,
+        token,
+        adminUser,
+        loginAdmin,
+        logoutAdmin,
+        addProduct,
+        updateProduct,
+        deleteProduct,
+        addOrder,
+        getStats,
+        sendMessage,
+        markAsRead,
+        deleteMessage,
+        loadProducts,
+        loadDashboard,
+      }}
+    >
       {children}
     </ShopContext.Provider>
   );

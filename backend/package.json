@@ -1,0 +1,15 @@
+{
+  "name": "shop-ma-riad-backend",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "api-gateway",
+    "services/*"
+  ],
+  "scripts": {
+    "dev:gateway": "node api-gateway/src/server.js",
+    "dev:auth": "node services/auth-service/src/server.js",
+    "dev:catalog": "node services/catalog-service/src/server.js",
+    "dev:communication": "node services/communication-service/src/server.js"
+  }
+}

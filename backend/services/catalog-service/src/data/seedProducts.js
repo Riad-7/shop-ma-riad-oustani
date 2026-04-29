@@ -1,0 +1,38 @@
+export const seedProducts = [
+  {
+    title: 'Kaftan Atlas Prestige',
+    price: 1499,
+    description: 'Kaftan traditionnel avec finition artisanale et tissu premium.',
+    category: 'Mode',
+    image: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=800&q=80',
+    stock: 8,
+    rating: { rate: 4.8, count: 41 },
+  },
+  {
+    title: 'Babouches Cuir Luxe',
+    price: 329,
+    description: 'Babouches en cuir souple fabriquees a la main pour un confort quotidien.',
+    category: 'Accessoires',
+    image: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80',
+    stock: 22,
+    rating: { rate: 4.4, count: 18 },
+  },
+  {
+    title: 'Plateau Theiere Artisan',
+    price: 549,
+    description: 'Ensemble marocain pour le the avec finition metal gravee.',
+    category: 'Maison',
+    image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=800&q=80',
+    stock: 14,
+    rating: { rate: 4.7, count: 27 },
+  },
+  {
+    title: 'Huile d Argan Bio',
+    price: 189,
+    description: 'Huile d argan cosmetique pure pour soin peau et cheveux.',
+    category: 'Beauté',
+    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80',
+    stock: 33,
+    rating: { rate: 4.9, count: 63 },
+  },
+];
