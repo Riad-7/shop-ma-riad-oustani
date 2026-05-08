@@ -17,7 +17,7 @@ function ProductList() {
           </h2>
 
           <div className="input-group" style={{ maxWidth: "400px" }}>
-            <span className="input-group-text bg-light border-end-0">🔍</span>
+            <span className="input-group-text bg-light border-end-0">Search</span>
             <input
               type="text"
               className="form-control form-control-lg bg-light border-start-0"

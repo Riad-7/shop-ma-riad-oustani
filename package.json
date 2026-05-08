@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "start:all": "powershell -ExecutionPolicy Bypass -File ./scripts/start-all.ps1",
     "gateway:dev": "node backend/api-gateway/src/server.js",
     "backend:install": "npm install --prefix backend"
   },

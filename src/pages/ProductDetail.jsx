@@ -35,8 +35,8 @@ function ProductDetail() {
                   alt={product.title}
                   className="img-fluid rounded-3"
                   style={{
-                    maxHeight: "420px",
-                    objectFit: "contain",
+                    maxHeight: '420px',
+                    objectFit: 'contain',
                   }}
                 />
               </div>
@@ -50,15 +50,15 @@ function ProductDetail() {
 
                 {product.rating && (
                   <div className="mb-3">
-                    {"★".repeat(Math.round(product.rating.rate))}
-                    {"☆".repeat(5 - Math.round(product.rating.rate))}
+                    {'*'.repeat(Math.round(product.rating.rate))}
+                    {'.'.repeat(5 - Math.round(product.rating.rate))}
                     <span className="text-muted ms-2">
                       ({product.rating.count} avis)
                     </span>
                   </div>
                 )}
 
-                <p className="text-secondary mb-4" style={{ lineHeight: "1.6" }}>
+                <p className="text-secondary mb-4" style={{ lineHeight: '1.6' }}>
                   {product.description}
                 </p>
 

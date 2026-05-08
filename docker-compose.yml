@@ -1,17 +1,4 @@
 services:
-  frontend:
-    image: node:20-alpine
-    working_dir: /app
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
-    volumes:
-      - ./:/app
-    ports:
-      - "5173:5173"
-    environment:
-      VITE_API_URL: http://localhost:8080/api
-    depends_on:
-      - api-gateway
-
   mongo:
     image: mongo:7
     restart: unless-stopped
@@ -19,6 +6,12 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -26,63 +19,128 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   auth-service:
-    image: node:20-alpine
-    working_dir: /app/backend
-    command: sh -c "npm install && npm run dev:auth"
-    volumes:
-      - ./:/app
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    restart: unless-stopped
     env_file:
       - ./backend/.env
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      MONGO_AUTH_URI: mongodb://mongo:27017/shop_auth
     depends_on:
-      - mongo
-      - rabbitmq
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     ports:
       - "4001:4001"
+    command: ["node", "services/auth-service/src/server.js"]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4001/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
 
   catalog-service:
-    image: node:20-alpine
-    working_dir: /app/backend
-    command: sh -c "npm install && npm run dev:catalog"
-    volumes:
-      - ./:/app
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    restart: unless-stopped
     env_file:
       - ./backend/.env
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      MONGO_CATALOG_URI: mongodb://mongo:27017/shop_catalog
     depends_on:
-      - mongo
-      - rabbitmq
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     ports:
       - "4002:4002"
+    command: ["node", "services/catalog-service/src/server.js"]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4002/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
 
   communication-service:
-    image: node:20-alpine
-    working_dir: /app/backend
-    command: sh -c "npm install && npm run dev:communication"
-    volumes:
-      - ./:/app
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    restart: unless-stopped
     env_file:
       - ./backend/.env
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      MONGO_COMM_URI: mongodb://mongo:27017/shop_communication
     depends_on:
-      - mongo
-      - rabbitmq
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     ports:
       - "4003:4003"
+    command: ["node", "services/communication-service/src/server.js"]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4003/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
 
   api-gateway:
-    image: node:20-alpine
-    working_dir: /app/backend
-    command: sh -c "npm install && npm run dev:gateway"
-    volumes:
-      - ./:/app
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    restart: unless-stopped
     env_file:
       - ./backend/.env
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:4001
+      CATALOG_SERVICE_URL: http://catalog-service:4002
+      COMMUNICATION_SERVICE_URL: http://communication-service:4003
     depends_on:
-      - auth-service
-      - catalog-service
-      - communication-service
+      auth-service:
+        condition: service_healthy
+      catalog-service:
+        condition: service_healthy
+      communication-service:
+        condition: service_healthy
     ports:
       - "8080:8080"
+    command: ["node", "api-gateway/src/server.js"]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8080/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8080/api
+    restart: unless-stopped
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    ports:
+      - "5173:80"
 
 volumes:
   mongo_data:

@@ -30,7 +30,10 @@ export const apiRequest = async (path, options = {}) => {
     return null;
   }
 
-  const payload = await response.json();
+  const contentType = response.headers.get('content-type') || '';
+  const payload = contentType.includes('application/json')
+    ? await response.json()
+    : { message: await response.text() };
 
   if (!response.ok) {
     throw new Error(payload.message || 'Request failed');

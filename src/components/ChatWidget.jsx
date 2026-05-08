@@ -5,9 +5,9 @@ import { API_URL } from '../services/api';
 const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { id: 1, text: 'Hello! How can I help you today?', role: 'bot' }
+    { id: 1, text: 'Bonjour, comment puis-je vous aider aujourd hui ?', role: 'bot' },
   ]);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
@@ -16,7 +16,7 @@ const ChatWidget = () => {
   };
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
@@ -30,11 +30,11 @@ const ChatWidget = () => {
     const userMessage = {
       id: Date.now(),
       text: inputValue,
-      role: 'user'
+      role: 'user',
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInputValue("");
+    setInputValue('');
     setIsLoading(true);
 
     try {
@@ -55,17 +55,17 @@ const ChatWidget = () => {
       const botMessage = {
         id: Date.now() + 1,
         text: data.reply,
-        role: 'bot'
+        role: 'bot',
       };
 
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error('Error sending message:', error);
       const errorMessage = {
         id: Date.now() + 1,
-        text: "Sorry, I'm having trouble connecting to the server. Please try again later.",
+        text: 'Impossible de joindre le serveur pour le moment. Merci de reessayer plus tard.',
         role: 'bot',
-        isError: true
+        isError: true,
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -76,14 +76,14 @@ const ChatWidget = () => {
   return (
     <>
       <button className="chat-widget-toggle" onClick={toggleChat}>
-        {isOpen ? '×' : '💬'}
+        {isOpen ? 'X' : 'Chat'}
       </button>
 
       {isOpen && (
         <div className="chat-widget">
           <div className="chat-header">
             <span>Shop Assistant</span>
-            <button className="close-btn" onClick={toggleChat}>−</button>
+            <button className="close-btn" onClick={toggleChat}>-</button>
           </div>
 
           <div className="chat-messages">
@@ -112,7 +112,7 @@ const ChatWidget = () => {
               disabled={isLoading}
             />
             <button type="submit" disabled={isLoading || !inputValue.trim()}>
-              ➤
+              Send
             </button>
           </form>
         </div>

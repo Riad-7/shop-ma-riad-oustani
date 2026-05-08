@@ -17,12 +17,25 @@ const routeMap = [
   { prefix: '/api/events', target: env.communicationServiceUrl },
 ];
 
+const parsePayload = async (response) => {
+  const contentType = response.headers.get('content-type') || '';
+
+  if (contentType.includes('application/json')) {
+    return response.json();
+  }
+
+  const text = await response.text();
+  return text ? { message: text } : null;
+};
+
 const proxyRequest = async (req, res, target) => {
   const response = await fetch(`${target}${req.originalUrl.replace('/api', '')}`, {
     method: req.method,
     headers: {
-      'Content-Type': 'application/json',
       authorization: req.headers.authorization || '',
+      ...(req.body && !['GET', 'HEAD'].includes(req.method)
+        ? { 'Content-Type': 'application/json' }
+        : {}),
     },
     body: ['GET', 'HEAD'].includes(req.method) ? undefined : JSON.stringify(req.body),
   });
@@ -31,10 +44,10 @@ const proxyRequest = async (req, res, target) => {
     return res.status(204).send();
   }
 
-  const payload = await response.json();
+  const payload = await parsePayload(response);
 
   if (!response.ok) {
-    return res.status(response.status).json(payload);
+    return res.status(response.status).json(payload || { message: 'Request failed' });
   }
 
   return res.status(response.status).json(payload);

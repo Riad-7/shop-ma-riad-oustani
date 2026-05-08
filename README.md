@@ -31,6 +31,11 @@ services -> MongoDB
 docker compose up --build
 ```
 
+Le compose utilise maintenant des Dockerfiles dedies pour:
+- le frontend React build puis servi par Nginx
+- chaque microservice Node.js
+- MongoDB et RabbitMQ avec healthchecks
+
 Services exposes:
 
 - Frontend: `http://localhost:5173`
@@ -40,6 +45,12 @@ Services exposes:
 - Communication Service: `http://localhost:4003`
 - MongoDB: `mongodb://localhost:27017`
 - RabbitMQ: `http://localhost:15672` (`guest` / `guest`)
+
+Pour arreter:
+
+```bash
+docker compose down
+```
 
 ## Variables d'environnement
 
@@ -55,10 +66,20 @@ Admin par defaut:
 Depuis la racine:
 
 ```bash
+npm run start:all
 npm run dev
 npm run backend:install
 npm run gateway:dev
 ```
+
+`npm run start:all` lance tout le projet en local (frontend, services backend et gateway) dans des processus en arriere-plan.
+Prerequis:
+- MongoDB sur `localhost:27017`
+- RabbitMQ sur `localhost:5672`
+
+Logs:
+- Frontend: `logs/frontend.log`
+- Backend: `backend/logs/*.log`
 
 Depuis `backend/`:
 
