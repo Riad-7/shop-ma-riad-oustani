@@ -176,6 +176,7 @@ export const ShopProvider = ({ children }) => {
     const data = await apiRequest('/messages', {
       method: 'POST',
       body: msgData,
+      
     });
 
     if (token) {
