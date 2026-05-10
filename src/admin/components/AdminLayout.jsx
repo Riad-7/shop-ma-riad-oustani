@@ -18,6 +18,7 @@ const AdminLayout = () => {
         <h2>Shop.ma Admin</h2>
         <nav className="admin-nav">
           <NavLink
+          
             to="/admin/dashboard"
             className={({ isActive }) => (isActive ? "active" : "")}
           >
