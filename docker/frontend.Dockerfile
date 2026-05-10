@@ -1,4 +1,6 @@
-FROM node:20-alpine AS build
+FROM alpine:3.22 AS build
+
+RUN apk add --no-cache nodejs npm
 
 WORKDIR /app
 
@@ -8,7 +10,7 @@ ENV VITE_API_URL=$VITE_API_URL
 COPY package.json ./
 COPY package-lock.json ./
 
-RUN npm ci
+RUN npm ci --no-audit --fetch-retries=5 --fetch-retry-maxtimeout=120000 --fetch-retry-mintimeout=20000
 
 COPY . ./
 
