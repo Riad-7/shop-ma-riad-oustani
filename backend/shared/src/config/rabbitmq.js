@@ -3,9 +3,26 @@ import { env } from './env.js';
 
 let connectionPromise;
 
+const createConnection = async () => {
+  const connection = await amqp.connect(env.rabbitMqUrl);
+
+  connection.on('close', () => {
+    connectionPromise = undefined;
+  });
+
+  connection.on('error', () => {
+    connectionPromise = undefined;
+  });
+
+  return connection;
+};
+
 const getConnection = async () => {
   if (!connectionPromise) {
-    connectionPromise = amqp.connect(env.rabbitMqUrl);
+    connectionPromise = createConnection().catch((error) => {
+      connectionPromise = undefined;
+      throw error;
+    });
   }
 
   return connectionPromise;
